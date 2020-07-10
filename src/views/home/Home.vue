@@ -1,17 +1,27 @@
 <template>
     <div id="home">
         <nav-bar class="home-nav"><div slot="center">买买买</div></nav-bar>
+        <swiper>
+            <swiper-item v-for="(item, index) in banners" :key="index">
+                <a :href="item.link">
+                    <img :src="item.image" alt="">
+                </a>
+            </swiper-item>
+        </swiper>
     </div>
 </template>
 
 <script>
     import NavBar from 'components/common/navbar/NavBar'
     import {getHomeMultidata} from 'network/home'
+    import {Swiper, SwiperItem} from 'components/common/swiper'
 
     export default {
         name: 'home',
         components: {
-            NavBar
+            NavBar,
+            Swiper,
+            SwiperItem
         },
         data() {
             return {
@@ -22,9 +32,9 @@
         created() {
             // 1.请求多个数据
             getHomeMultidata().then(res => {
-                // console.log(res);
+                console.log(res);
                 // this.result = res;
-                this.banners = res.data.banner;
+                this.banners = res.data.banner.list;
                 this.recommends = res.data.recommend;
             })
         }
