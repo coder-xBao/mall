@@ -27,12 +27,22 @@ export default {
     }
   },
   methods: {
+    // ? time ????? x, y
     scrollTo(x, y, time = 500) {
-      this.scroll.scrollTo(x, y, time);
+      this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x, y, time);
     },
+    // ????????
     refresh() {
-      this.scroll.finishPullUp();
+      this.scroll && this.scroll.finishPullUp();
+    },
+    // ??????????content??
+    refreshContent() {
+      this.scroll.refresh();
+      console.log("------");
     }
+  },
+  created() {
+    console.log("scroll created");
   },
   mounted() {
     // ?? better-scroll ??
@@ -42,14 +52,20 @@ export default {
       click: true
     });
     // ??????
-    this.scroll.on("scroll", position => {
-      this.$emit("scroll", position);
-    });
-    // ????
-    this.scroll.on("pullingUp", () => {
-      // console.log("aaaaaa");
-      this.$emit("pullingUp");
-    });
+    if (this.probeType === 2 || this.probeType === 3) {
+      this.scroll.on("scroll", position => {
+        this.$emit("scroll", position);
+      });
+    }
+    // ??????
+    if (this.pullUpload) {
+      this.scroll.on("pullingUp", () => {
+        this.$emit("pullingUp");
+      });
+    }
+  },
+  destroyed() {
+    console.log("scroll destroyed");
   }
 };
 </script>
