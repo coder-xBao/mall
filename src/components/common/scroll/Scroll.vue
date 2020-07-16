@@ -27,22 +27,24 @@ export default {
     }
   },
   methods: {
-    // ? time ????? x, y
+    // 在 time 时间滚到 x, y
     scrollTo(x, y, time = 500) {
-      this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x, y, time);
+      // this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x, y, time);
+      this.scroll.scrollTo(x, y, time);
+      console.log("scrroll");
     },
-    // ????????
+    // 下拉到底重新刷新
     refresh() {
       this.scroll && this.scroll.finishPullUp();
     },
-    // ??????????content??
+    // 刷新content高度
     refreshContent() {
       this.scroll.refresh();
-      console.log("------");
+    },
+    // 获得y高度
+    getScrollHeight() {
+      return this.scroll ? this.scroll.y : 0;
     }
-  },
-  created() {
-    console.log("scroll created");
   },
   mounted() {
     // ?? better-scroll ??
@@ -63,9 +65,6 @@ export default {
         this.$emit("pullingUp");
       });
     }
-  },
-  destroyed() {
-    console.log("scroll destroyed");
   }
 };
 </script>

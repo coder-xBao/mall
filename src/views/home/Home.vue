@@ -85,7 +85,11 @@ export default {
       // tabControl 的 offsetTop
       tabControlOffsetTop: 0,
       // 是否将tab-control设置为fixed
-      isFixed: false
+      isFixed: false,
+      // 离开 home 时保存scroll位置
+      scrollPosition: 0,
+      // bus 中的imgLoad事件绑定的函数
+      handleImgLoad: null
     };
   },
   computed: {
@@ -104,10 +108,28 @@ export default {
   mounted() {
     // 监听事件总线中 图片加载完的事件
     const refresh = debounce(this.$refs.scroll.refreshContent, 10);
-    this.$bus.$on("imgLoad", () => {
+    this.handleImgLoad = () => {
       // 调用 scroll 刷新 content 高度
       refresh();
-    });
+      // console.log("home execute handelImgLoad");
+    };
+    this.$bus.$on("homeImgLoad", this.handleImgLoad);
+    console.log("home mounted");
+  },
+  activated() {
+    // console.log("active");
+    // console.log(this.scrollPosition);
+    this.$refs.scroll.refreshContent();
+    this.$refs.scroll.scrollTo(0, this.scrollPosition, 0);
+    // 重新监听imgLoad事件
+    // this.$bus.$on("imgLoad", this.handleImgLoad);
+  },
+  deactivated() {
+    // console.log("deactive");
+    // console.log(this.$refs.scroll.getScrollHeight());
+    this.scrollPosition = this.$refs.scroll.getScrollHeight();
+    // 取消监听imgLoad事件
+    // this.$bus.$off("imgLoad", this.handleImgLoad);
   },
   methods: {
     // 事件监听
@@ -133,18 +155,17 @@ export default {
       // 判断是否显示 返回顶部 按钮
       this.isShowBackTop = -position.y > 1000;
       this.isFixed = -position.y > this.tabControlOffsetTop;
-      console.log(this.isFixed);
     },
     // 轮播图中任一图片加载完成
     homeSwiperImgLoad() {
       // 获得 tabControl 距离顶部偏移量
       this.tabControlOffsetTop = this.$refs.tabControl2.$el.offsetTop - 44;
-      console.log(this.tabControlOffsetTop);
     },
     // 加载更多商品数据
     loadMore() {
       // console.log("loadmore");
       this.getHomeGoods(this.currentType);
+      // 重新刷新下拉到底事件
       this.$refs.scroll.refresh();
     },
     // 网络请求相关

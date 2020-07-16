@@ -13,7 +13,9 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "NavBar"
+};
 </script>
 
 <style>
@@ -29,11 +31,11 @@ export default {};
 .right {
   height: 44px;
   width: 60px;
-  background-color: red;
+  /* background-color: red; */
 }
 
 .center {
   flex: 1;
-  background-color: yellow;
+  /* background-color: yellow; */
 }
 </style>

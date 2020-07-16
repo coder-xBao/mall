@@ -1,6 +1,6 @@
 <template>
-  <div class="item">
-    <img :src="item.show.img" @load="imgLoad" />
+  <div class="item" @click="itemClick">
+    <img :src="getImg" @load="imgLoad" />
     <div class="info">
       <p>{{item.title}}</p>
       <span class="price">{{item.price}}</span>
@@ -20,10 +20,31 @@ export default {
       }
     }
   },
+  computed: {
+    getImg() {
+      return this.item.image || this.item.show.img;
+    }
+  },
   methods: {
     imgLoad() {
-      // console.log("imgLoad");
-      this.$bus.$emit("imgLoad");
+      if (!this.$route.path.indexOf("/home")) {
+        console.log("home emit");
+        this.$bus.$emit("homeImgLoad");
+      } else if (!this.$route.path.indexOf("/detail")) {
+        console.log("detail emit");
+        this.$bus.$emit("detailImgLoad");
+      }
+    },
+    itemClick() {
+      // 通过params传递参数
+      this.$router.push("/detail/" + this.item.iid);
+      // 通过query传递参数
+      // this.$router.push({
+      //   path: "/detail",
+      //   query: {
+      //     iid: this.item.iid
+      //   }
+      // });
     }
   }
 };
