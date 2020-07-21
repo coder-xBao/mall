@@ -18,6 +18,12 @@
       <!-- 推荐商品模块 -->
       <goods-list :goodsList="recommendGoods" ref="recommend" />
     </scroll>
+    <!-- 返回顶部按钮 -->
+    <back-top @click.native="toTop" v-show="isShowBackTop" />
+    <!-- 底部导航栏 -->
+    <bottom-bar @addToCart="addToCart" />
+    <!-- 添加购物车成功通知 -->
+    <toast :message="cartMessage" :isShow="toastShow" />
   </div>
 </template>
 
@@ -26,11 +32,14 @@ import NavBar from "./chidrenComps/DetailNavBar";
 import DetailSwiper from "./chidrenComps/DetailSwiper";
 import DetailBaseInfo from "./chidrenComps/DetailBaseInfo";
 import ShopInfo from "./chidrenComps/ShopInfo";
-import Scroll from "components/common/scroll/Scroll";
 import goodsImgIntro from "./chidrenComps/GoodsImgIntro";
 import DetailParamInfo from "./chidrenComps/DetailParamInfo";
 import CommentsInfo from "./chidrenComps/CommentsInfo";
+import BottomBar from "./chidrenComps/BottomBar";
+import Scroll from "components/common/scroll/Scroll";
+import Toast from "components/common/toast/Toast";
 import GoodsList from "components/content/homeGoods/GoodsList";
+import BackTop from "components/content/backTop/BackTop";
 import { debounce } from "components/common/utils/debounce";
 
 import {
@@ -53,24 +62,41 @@ export default {
     goodsImgIntro,
     DetailParamInfo,
     CommentsInfo,
-    GoodsList
+    GoodsList,
+    BottomBar,
+    BackTop,
+    Toast
   },
   data() {
     return {
+      // 商品id
       iid: null,
+      // 轮播图图片
       swiperImg: null,
+      // 商品介绍信息
       goods: {},
+      // 店铺信息
       shopInfo: {},
+      // 商品图片介绍
       goodsImgIntro: {},
+      // 商品具体参数信息
       paramInfo: {},
+      // 评论信息
       commentsInfo: {},
+      // 推荐商品数据
       recommendGoods: [],
       // 与detailImgLoad事件绑定的函数
       handleImgLoad: null,
       // 每个title距离顶部的位置
       titlesOffsetTop: [],
       // 记录目前的title
-      currentTitle: 0
+      currentTitle: 0,
+      // 是否显示返回顶部按钮
+      isShowBackTop: false,
+      // 加入购物车成功后的返回信息
+      cartMessage: "",
+      // toast是否显示
+      toastShow: false
     };
   },
   created() {
@@ -151,6 +177,29 @@ export default {
       }
       // console.log(this.currentTitle);
       this.$refs.navbar.currentIndex = this.currentTitle;
+      // 判断是否显示 返回顶部 按钮
+      this.isShowBackTop = -position.y > 1000;
+    },
+    toTop() {
+      this.$refs.scroll.scrollTo(0, 0);
+    },
+    addToCart() {
+      // console.log("addToCart");
+      const product = {};
+      product.image = this.swiperImg[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
+      // console.log(product);
+      this.$store.dispatch("addCart", product).then(res => {
+        // console.log(res);
+        this.cartMessage = res;
+        this.toastShow = true;
+        setTimeout(() => {
+          this.toastShow = false;
+        }, 1000);
+      });
     }
   }
 };
@@ -164,8 +213,7 @@ export default {
   height: 100vh;
 }
 .wrapper {
-  height: calc(100%-49px);
-  height: 630px;
+  height: calc(100% - 93px);
 }
 .nav-bar {
   position: relative;
